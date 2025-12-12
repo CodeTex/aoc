@@ -28,10 +28,10 @@ function get_points_on_segment(segment::Tuple{Int, Int, Int, Int})::Vector{Tuple
   x1, y1, x2, y2 = segment
   if x1 == x2
     # x coords are const
-    return [(x1, y) for y in y1:y2]
+    return [(x1, y) for y in min(y1, y2):max(y1, y2)]
   else
     # y coords are const
-    return [(x, y1) for x in x1:x2]
+    return [(x, y1) for x in min(x1, x2):max(x1, x2)]
   end
 end
 
