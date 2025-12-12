@@ -24,12 +24,36 @@ function read_input(filename::String)::Vector{Tuple{Int, Int, Int, Int}}
   return segments
 end
 
+function get_points_on_segment(segment::Tuple{Int, Int, Int, Int})::Vector{Tuple{Int, Int}}
+  x1, y1, x2, y2 = segment
+  if x1 == x2
+    # x coords are const
+    return [(x1, y) for y in y1:y2]
+  else
+    # y coords are const
+    return [(x, y1) for x in x1:x2]
+  end
+end
+
 function main()
   data = read_input(INPUT_FP)
   println("Parsed $(length(data)) line segments\n")
 
-  filtered = filter(seg -> seg[1] == seg[3] || seg[2] == seg[4])
-  # println("Filtered out $(length(data)-length(filtered)) line segments\n")  
+  filtered = filter(seg -> seg[1] == seg[3] || seg[2] == seg[4], data)
+  println("Filtered out $(length(data)-length(filtered)) line segments\n")
+
+  overlaps = Dict{Tuple{Int, Int}, Int}()
+  for segment in filtered
+    points = get_points_on_segment(segment)
+    for point in points
+      overlaps[point] = get(overlaps, point, 0) + 1
+    end
+  end
+
+  println("Total coordinates: $(length(overlaps))")
+
+  overlap_counts = sum(1 for count in values(overlaps) if count >= 2)
+  println("Total coordinates with 2+ overlaps: $overlap_counts")
 end
 
 main()
