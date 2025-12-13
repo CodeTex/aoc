@@ -27,19 +27,29 @@ end
 function get_points_on_segment(segment::Tuple{Int, Int, Int, Int})::Vector{Tuple{Int, Int}}
   x1, y1, x2, y2 = segment
   if x1 == x2
-    # x coords are const
+    # horizontal: x coords are const
     return [(x1, y) for y in min(y1, y2):max(y1, y2)]
-  else
-    # y coords are const
+  elseif y1 == y2
+    # horizontal: y coords are const
     return [(x, y1) for x in min(x1, x2):max(x1, x2)]
+  else
+    # diagonal: both x and y change
+    dx = sign(x2 - x1)
+    dy = sign(y2 - y1)
+    steps = abs(x2 - x1)
+
+    return [(x1 + dx*i, y1 + dy*i) for i in 0:steps]
   end
 end
 
-function solve_part1(segments::Vector{Tuple{Int, Int, Int, Int}})::Dict{Tuple{Int, Int}, Int}
-  # Only conside horizontal or vertical lines
-  filtered = filter(seg -> seg[1] == seg[3] || seg[2] == seg[4], segments)
-  println("Filtered out $(length(segments)-length(filtered)) line segments\n")
+function count_overlaps(segments::Vector{Tuple{Int, Int, Int, Int}}, include_diag::Bool)::Int
+  if include_diag
+    filtered = segments
+  else
+    filtered = filter(seg -> seg[1] == seg[3] || seg[2] == seg[4], segments)
+  end
 
+  # Track overlaps in segment lines
   overlaps = Dict{Tuple{Int, Int}, Int}()
   for segment in filtered
     points = get_points_on_segment(segment)
@@ -50,18 +60,19 @@ function solve_part1(segments::Vector{Tuple{Int, Int, Int, Int}})::Dict{Tuple{In
 
   println("Total coordinates: $(length(overlaps))")
 
-  result = sum(1 for count in values(overlaps) if count >= 2)
-  println("Total coordinates with 2+ overlaps: $result")
-
-  return overlaps
+  # Count coords with 2+ overlaps
+  return sum(1 for count in values(overlaps) if count >= 2)
 end
 
 function main()
   data = read_input(INPUT_FP)
   println("Parsed $(length(data)) line segments\n")
 
-  overlaps = solve_part1(data)
+  straight_overlaps = count_overlaps(data, false)
+  println("Solution #1: $straight_overlaps")
 
+  all_overlaps = count_overlaps(data, true)
+  println("Solution #2: $all_overlaps")
 end
 
 main()
