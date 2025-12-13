@@ -35,12 +35,10 @@ function get_points_on_segment(segment::Tuple{Int, Int, Int, Int})::Vector{Tuple
   end
 end
 
-function main()
-  data = read_input(INPUT_FP)
-  println("Parsed $(length(data)) line segments\n")
-
-  filtered = filter(seg -> seg[1] == seg[3] || seg[2] == seg[4], data)
-  println("Filtered out $(length(data)-length(filtered)) line segments\n")
+function solve_part1(segments::Vector{Tuple{Int, Int, Int, Int}})::Dict{Tuple{Int, Int}, Int}
+  # Only conside horizontal or vertical lines
+  filtered = filter(seg -> seg[1] == seg[3] || seg[2] == seg[4], segments)
+  println("Filtered out $(length(segments)-length(filtered)) line segments\n")
 
   overlaps = Dict{Tuple{Int, Int}, Int}()
   for segment in filtered
@@ -52,8 +50,18 @@ function main()
 
   println("Total coordinates: $(length(overlaps))")
 
-  overlap_counts = sum(1 for count in values(overlaps) if count >= 2)
-  println("Total coordinates with 2+ overlaps: $overlap_counts")
+  result = sum(1 for count in values(overlaps) if count >= 2)
+  println("Total coordinates with 2+ overlaps: $result")
+
+  return overlaps
+end
+
+function main()
+  data = read_input(INPUT_FP)
+  println("Parsed $(length(data)) line segments\n")
+
+  overlaps = solve_part1(data)
+
 end
 
 main()
