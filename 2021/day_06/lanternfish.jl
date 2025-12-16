@@ -38,7 +38,7 @@ function main()
   counter = init_fish_dict(data)
   println("Initial state: $counter")
 
-  x = 80
+  x = 256 # 80
   for i in 1:x
     counter = update_counter(counter)
   end
