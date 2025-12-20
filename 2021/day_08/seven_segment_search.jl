@@ -12,18 +12,17 @@ function parse_line(line::String)::Vector{String}
   return output_values
 end
 
+function count_easy_digits(output_values::Vector{<:AbstractString})::Int
+  # Digits 1, 4, 7, 8 use unique segment counts: 2, 3, 4, 7
+  return count(val -> length(val) in (2, 3, 4, 7), output_values)
+end
+
 function main()
   lines = read_input(INPUT_FP)
   
-  println("Total lines read: $(length(lines))")
-  println("\nExample of first 3 lines:")
+  total = sum(line -> count_easy_digits(parse_line(line)), lines)
   
-  for i in 1:3
-    output_values = parse_line(lines[i])
-    println("\nLine $i:")
-    println("  Output values: $output_values")
-    println("  Lengths: $(length.(output_values))")
-  end
+  println("Part 1: Total count of digits 1, 4, 7, 8 in output values: $total")
 end
 
 main()
